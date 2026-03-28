@@ -1,0 +1,28 @@
+# --- OS Metadata ---
+.DS_Store
+Thumbs.db
+.cache/
+
+# --- Build Outputs ---
+# It is safer to ignore all top-level build folders
+[Bb]uild/
+bin/
+obj/
+*.a
+*.so
+*.dylib
+*.out
+
+# --- IDE & Toolchain ---
+.vscode/
+.idea/
+.clangd/
+compile_commands.json
+.nvimlog
+
+# --- CMake internals ---
+CMakeCache.txt
+CMakeFiles/
+CMakeSettings.json
+cmake_install.cmake
+install/
