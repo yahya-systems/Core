@@ -65,8 +65,6 @@ public:
     memcpy(cdata, list.begin(), clength * sizeof(T));
   }
 
-  // Allocates a vector of [count] elements, leaves memory uninitialized.
-  // If you want to initialize memory vector(size_t count, T element) works.
   vector(size_t count) {
     clength = count;
     ccapacity = clength * 2;
