@@ -165,3 +165,57 @@ public:
 
   ~StackAllocator() { free(buffer); }
 };
+
+template <typename T> class PoolAllocator {
+  void **freePtr;
+  T *buffer = nullptr;
+  size_t capacity = 0;
+  size_t slotsAvailable = 0;
+
+public:
+  PoolAllocator() = delete;
+  PoolAllocator(const PoolAllocator<T> &other) = delete;
+
+  PoolAllocator(size_t count) : capacity(count), slotsAvailable(count) {
+    static_assert(sizeof(T) >= sizeof(void *),
+                  "Pool Allocator Cannot Take A Type smaller than 8 bytes");
+
+    buffer = (T *)malloc(count * sizeof(T));
+
+    if (!buffer) {
+      abort(); // out of memory
+    }
+
+    for (size_t i = 0; i < count - 1; i++) {
+      *(T **)&buffer[i] = &buffer[i + 1];
+    }
+
+    *(T **)&buffer[count - 1] = nullptr;
+
+    freePtr = buffer;
+  }
+
+  T *alloc() {
+    if (!freePtr) {
+      return nullptr;
+    }
+
+    T *temp = (T *)freePtr;
+    freePtr = (void **)*freePtr;
+    slotsAvailable--;
+    return temp;
+  }
+
+  void free(T *ptr) {
+    *(void **)ptr = freePtr;
+    freePtr = ptr;
+    slotsAvailable++;
+    return;
+  }
+
+  bool isFull() { return freePtr; }
+
+  size_t available() { return slotsAvailable; }
+
+  ~PoolAllocator() { free(buffer); }
+};
